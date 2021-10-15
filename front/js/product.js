@@ -1,44 +1,38 @@
-const title = document.getElementById("title");
-const cost = document.getElementById("price");
-const descript = document.getElementById("description");
-const color = document.getElementById("colors");
-const opt1 = document.createElement("option");
-const opt2 = document.createElement("option");
-const opt3 = document.createElement("option");
-const img = document.querySelector(".item__img");
-const image = document.createElement("img");
-
-
-fetch("http://localhost:3000/api/products/107fb5b75607497b96722bda5b504926")
+fetch("http://localhost:3000/api/products")
     .then(function (resp) {
         if (resp.ok) {return resp.json()}
     })
-    .then(function (obj) {
-        img.appendChild(image);
-        image.src = obj.imageUrl;
-        image.alt = obj.altTxt;
+    .then(obj => {
+        const url_id = window.location.search
+        const urlSearch = new URLSearchParams(url_id)
+        const _id = urlSearch.get("id")
+        const productSelect = obj.find((element)=> element._id === _id)
 
-        const name = obj.name;
-        title.innerHTML = name;
+        const item_img = document.querySelector(".item__img");
+        const img = document.createElement("img")
+        item_img.appendChild(img)
+        img.src = productSelect.imageUrl
+        img.alt = productSelect.altTxt
 
-        const price = obj.price;
-        cost.innerHTML = price;
+        const title = document.querySelector("#title")
+        const name = productSelect.name
+        title.innerHTML = name
 
-        const description = obj.description;
-        descript.innerHTML = description;
+        const cost = document.querySelector("#price")
+        const price = productSelect.price
+        cost.innerHTML = price
 
-        color.appendChild(opt1);
-        opt1.value = obj.colors[0];
-        opt1.text = "Blue";
-        color.add = (opt1);
+        const descript = document.querySelector("#description")
+        const description = productSelect.description
+        descript.innerHTML = description
 
-        color.appendChild(opt2);
-        opt2.value = obj.colors[1];
-        opt2.text = "White";
-        color.add = (opt2);
-
-        color.appendChild(opt3);
-        opt3.value = obj.colors[2];
-        opt3.text = "Black";
-        color.add = (opt3);
+        const colors = document.querySelector("#colors")
+        let selectColor = productSelect.colors
+        for(c = 0; c < selectColor.length; c++){
+            const option = document.createElement("option")
+            colors.appendChild(option)
+            colors.add = (option)
+            option.value = [c]
+            option.text = selectColor[c]
+        }
     })

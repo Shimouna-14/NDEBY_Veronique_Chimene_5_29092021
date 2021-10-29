@@ -15,6 +15,8 @@ fetch("http://localhost:3000/api/products")
         const titlePage = document.querySelector("title")
         const cost = document.querySelector("#price")
         const descript = document.querySelector("#description")
+        const colors = document.querySelector("#colors")
+        const button = document.querySelector("#addToCart")
 
         // Add an image in ".item__img"
         const img = document.createElement("img")
@@ -36,7 +38,6 @@ fetch("http://localhost:3000/api/products")
         descript.innerHTML = description
 
         // Put the elements of the table "colors" by their size
-        const colors = document.querySelector("#colors")
         let selectColor = productSelect.colors
         for(i = 0; i < selectColor.length; i++){
             const option = document.createElement("option")
@@ -44,10 +45,9 @@ fetch("http://localhost:3000/api/products")
             colors.add = (option)
             option.value = [i]
             option.text = selectColor[i]
-        }  
+        }
 
         // Select the data for the Local Storage
-        const button = document.getElementById("addToCart")
         button.addEventListener("click", event => {
             event.preventDefault();
             let user_choice = {
@@ -55,19 +55,32 @@ fetch("http://localhost:3000/api/products")
                 altTxt : productSelect.altTxt,
                 product : productSelect.name,
                 id : productSelect._id,
+                color : colors.options[colors.selectedIndex].text,
                 number : quantity.value,
                 price : productSelect.price
             }
 
-            if(quantity.value == 0){
-                alert("Choose a number")
+            if(quantity.value < 1 || quantity.value > 100 || colors.value === ""){
+                alert("Choisissez une couleur et un nombre 1 entre 100")
             }
             else{
                 // Put the keys and values of "user_choice" in the Local Storage
-                let productLocalStorage = JSON.parse(localStorage.getItem("produit") || "[]")
-                productLocalStorage.push(user_choice)
-                localStorage.setItem("produit", JSON.stringify(productLocalStorage))
-                console.log(productLocalStorage)
+                let productLocalStorage = JSON.parse(localStorage.getItem("produit"))
+                if (productLocalStorage){
+                    productLocalStorage.push(user_choice)
+                    localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                    console.log(productLocalStorage)
+                    console.log(productLocalStorage[i].color, user_choice.color)
+                    // if (user_choice.id == productLocalStorage[i].id && user_choice.color == productLocalStorage[i].color){
+                    // }
+                    
+                }
+                else {
+                    productLocalStorage = []
+                    productLocalStorage.push(user_choice)
+                    localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                    console.log(productLocalStorage)
+                }
             }
         })
     })

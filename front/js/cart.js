@@ -5,7 +5,7 @@ fetch("http://localhost:3000/api/products")
         let productLocalStorage = JSON.parse(localStorage.getItem("produit"))
 
         // If the cart is empty
-        if (productLocalStorage == null) {
+        if (productLocalStorage == null || productLocalStorage == []) {
             const cart__items = document.querySelector("#cart__items")
             const div = document.createElement("h2")
             cart__items.appendChild(div)
@@ -42,10 +42,10 @@ fetch("http://localhost:3000/api/products")
                 item__content.appendChild(item__content__titlePrice)
                 // Create a H2 and a paragraph add in div "item__content__titlePrice"
                 const h2 = document.createElement("h2")
-                h2.innerHTML = productLocalStorage[i].product
+                h2.innerHTML = productLocalStorage[i].product + " " + productLocalStorage[i].color + " "
                 item__content__titlePrice.appendChild(h2)
                 const price = document.createElement("p")
-                price.innerHTML = productLocalStorage[i].price + " €"
+                price.innerHTML = productLocalStorage[i].price * productLocalStorage[i].number + " €" 
                 item__content__titlePrice.appendChild(price)
 
                 // ------------ Create a div "item__content__settings", append in the div "item__content"
@@ -75,6 +75,14 @@ fetch("http://localhost:3000/api/products")
                 deleteItem.className = "deleteItem"
                 item__content__settings__delete.appendChild(deleteItem)
                 deleteItem.innerHTML = "Supprimer"
+                // Delete an article refresh the informations 
+                let selectID = productLocalStorage[i].id
+                deleteItem.addEventListener("click", event => {
+                    event.preventDefault()
+                    productLocalStorage = productLocalStorage.filter(el => el.id !== selectID)
+                    localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                    window.location.reload()
+                })
 
                 // ------ Show the number of products
                 const totalQuantity = document.querySelector("#totalQuantity")
@@ -83,7 +91,7 @@ fetch("http://localhost:3000/api/products")
                 // ------ Show total price
                 let allPrice = []
                 for(j = 0; j < productLocalStorage.length; j++){
-                    let addPrice = productLocalStorage[j].price
+                    let addPrice = productLocalStorage[j].price * productLocalStorage[j].number
                     allPrice.push(addPrice)
                 }
                 const reducer = (previousValue, currentValue) => previousValue + currentValue

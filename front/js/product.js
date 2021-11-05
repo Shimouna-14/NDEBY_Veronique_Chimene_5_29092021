@@ -1,11 +1,11 @@
-fetch("http://localhost:3000/api/products")
+const url_id = window.location.search
+const urlSearch = new URLSearchParams(url_id)
+fetch("http://localhost:3000/api/products/")
     .then(function (resp) {
         if (resp.ok) {return resp.json()}
     })
     .then(obj => {
         // Get the id on the URL of the page, retrieve it and put its data
-        const url_id = window.location.search
-        const urlSearch = new URLSearchParams(url_id)
         const _id = urlSearch.get("id")
         const productSelect = obj.find((element)=> element._id === _id)
 
@@ -56,7 +56,7 @@ fetch("http://localhost:3000/api/products")
                 product : productSelect.name,
                 id : productSelect._id,
                 color : colors.options[colors.selectedIndex].text,
-                number : quantity.value,
+                quantity : quantity.value,
                 price : productSelect.price
             }
 
@@ -67,13 +67,24 @@ fetch("http://localhost:3000/api/products")
                 // Put the keys and values of "user_choice" in the Local Storage
                 let productLocalStorage = JSON.parse(localStorage.getItem("produit"))
                 if (productLocalStorage){
-                    productLocalStorage.push(user_choice)
-                    localStorage.setItem("produit", JSON.stringify(productLocalStorage))
-                    console.log(productLocalStorage)
-                    console.log(productLocalStorage[i].color, user_choice.color)
-                    // if (user_choice.id == productLocalStorage[i].id && user_choice.color == productLocalStorage[i].color){
-                    // }
-                    
+                    for (let current of productLocalStorage) {
+                        let count = false;
+                        if (current.id == user_choice.id && current.color == user_choice.color) {
+                            count = true
+                            let storage_quantity = parseInt(current.quantity, 10)  
+                            let user_quantity = parseInt(user_choice.quantity, 10)
+                            let addQuantity = storage_quantity += user_quantity
+                            localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                            console.log(productLocalStorage)
+                            console.log(addQuantity)
+
+                        } 
+                        else {
+                            productLocalStorage.push(user_choice)
+                            localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                            console.log(productLocalStorage)
+                        }
+                    }
                 }
                 else {
                     productLocalStorage = []

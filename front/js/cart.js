@@ -5,7 +5,7 @@ fetch("http://localhost:3000/api/products")
         let productLocalStorage = JSON.parse(localStorage.getItem("produit"))
 
         // If the cart is empty
-        if (productLocalStorage == null || productLocalStorage == []) {
+        if (productLocalStorage == null || productLocalStorage == "[]") {
             const cart__items = document.querySelector("#cart__items")
             const div = document.createElement("h2")
             cart__items.appendChild(div)
@@ -42,10 +42,10 @@ fetch("http://localhost:3000/api/products")
                 item__content.appendChild(item__content__titlePrice)
                 // Create a H2 and a paragraph add in div "item__content__titlePrice"
                 const h2 = document.createElement("h2")
-                h2.innerHTML = productLocalStorage[i].product + " " + productLocalStorage[i].color + " "
+                h2.innerHTML = productLocalStorage[i].product + " " + productLocalStorage[i].color
                 item__content__titlePrice.appendChild(h2)
                 const price = document.createElement("p")
-                price.innerHTML = productLocalStorage[i].price * productLocalStorage[i].number + " €" 
+                price.innerHTML = productLocalStorage[i].price * productLocalStorage[i].quantity + " €" 
                 item__content__titlePrice.appendChild(price)
 
                 // ------------ Create a div "item__content__settings", append in the div "item__content"
@@ -54,12 +54,12 @@ fetch("http://localhost:3000/api/products")
                 item__content.appendChild(item__content__settings)
                 // Create a paragraph and a input add in div "item__content__settings"
                 const item__content__settings__quantity = document.createElement("div")
-                item__content__settings__quantity .className = "cart__item__content__settings__quantity"
+                item__content__settings__quantity.className = "cart__item__content__settings__quantity"
                 item__content__settings.appendChild(item__content__settings__quantity)
                 const quantity = document.createElement("p")
                 quantity.innerHTML = "Qté : "  
                 const input = document.createElement("input")
-                input.value = productLocalStorage[i].number
+                input.value = productLocalStorage[i].quantity
                 input.type = "number"
                 input.min = "1"
                 input.max = "100"
@@ -87,11 +87,10 @@ fetch("http://localhost:3000/api/products")
                 // ------ Show the number of products
                 const totalQuantity = document.querySelector("#totalQuantity")
                 totalQuantity.innerHTML = productLocalStorage.length
-                
                 // ------ Show total price
                 let allPrice = []
                 for(j = 0; j < productLocalStorage.length; j++){
-                    let addPrice = productLocalStorage[j].price * productLocalStorage[j].number
+                    let addPrice = productLocalStorage[j].price * productLocalStorage[j].quantity
                     allPrice.push(addPrice)
                 }
                 const reducer = (previousValue, currentValue) => previousValue + currentValue

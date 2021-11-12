@@ -5,89 +5,57 @@ fetch("http://localhost:3000/api/products")
         let productLocalStorage = JSON.parse(localStorage.getItem("produit"))
 
         // If the cart is empty
-        if (productLocalStorage == null || productLocalStorage == "[]") {
-            const cart__items = document.querySelector("#cart__items")
-            const div = document.createElement("h2")
-            cart__items.appendChild(div)
-            div.innerHTML = "Le panier est vide"
+        if (productLocalStorage == null || productLocalStorage.length == []) {
+            const cart__items = document.getElementById("cart__items")
+            let cartEmpty = `<h2>Le panier est vide</h2>`
+            cart__items.innerHTML = cartEmpty
         }
         // If there is a product in the cart
         else {
             // Display the table information with a loop
             for(i = 0; i < productLocalStorage.length; i++){
-                // ------------ Select the element "#cart__items", create and add an article
-                const cart__items = document.querySelector("#cart__items")
-                const article = document.createElement("article")
-                article.className = "cart__item"
-                cart__items.appendChild(article)
+                // Select the id "cart__items", create and add
+                const cart__items = document.getElementById("cart__items")
+                let cart = `
+                <article class="cart__item">
+                    <div class="cart__item__img">
+                        <img src="${productLocalStorage[i].image}" alt="${productLocalStorage[i].altTxt}">
+                    </div>
+                    <div class="cart__item__content">
+                        <div class="cart__item__content__description">
+                            <h2>${productLocalStorage[i].product}</h2>
+                            <p>${productLocalStorage[i].color}</p>
+                            <p>${productLocalStorage[i].price}€</p>
+                        </div>
+                        <div class="cart__item__content__settings">
+                            <div class="cart__item__content__settings__quantity">
+                                <p>Qté : </p>
+                                <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${productLocalStorage[i].quantity}">
+                            </div>
+                            <div class="cart__item__content__settings__delete">
+                                <p class="deleteItem">Delete</p>
+                            </div>
+                        </div>
+                    </div>
+                </article>`
+                cart__items.innerHTML += cart
 
-                // ------------ Create a div "item__img", append in article and add a image
-                const item__img = document.createElement("div")
-                item__img.className = "cart__item__img"
-                article.appendChild(item__img)
-                const img = document.createElement("img")
-                item__img.appendChild(img)
-                img.src = productLocalStorage[i].image
-                img.alt = productLocalStorage[i].altTxt
+                // Delete an article refresh the informations
+                const deleteItem = document.querySelectorAll(".deleteItem")
+                for (let d = 0; d < deleteItem.length; d++) {
+                    deleteItem[d].addEventListener("click", event => {
+                        event.preventDefault()
+                        let selectID = productLocalStorage[d].id
+                        productLocalStorage = productLocalStorage.filter(el => el.id !== selectID)
+                        localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                        window.location.reload()
+                    })
+                }
 
-                /* ------------ Create a div "item__content", append in article and create the div "item__content__titlePrice",
-                "item__content__settings" and add them in the div */
-                const item__content = document.createElement("div")
-                item__content.className = "cart__item__content"
-                article.appendChild(item__content)
-
-                // ------------ Create a div "item__content__titlePrice", append in the div "item__content"
-                const item__content__titlePrice = document.createElement("div")
-                item__content__titlePrice.className = "cart__item__content__titlePrice"
-                item__content.appendChild(item__content__titlePrice)
-                // Create a H2 and a paragraph add in div "item__content__titlePrice"
-                const h2 = document.createElement("h2")
-                h2.innerHTML = productLocalStorage[i].product + " " + productLocalStorage[i].color
-                item__content__titlePrice.appendChild(h2)
-                const price = document.createElement("p")
-                price.innerHTML = productLocalStorage[i].price * productLocalStorage[i].quantity + " €" 
-                item__content__titlePrice.appendChild(price)
-
-                // ------------ Create a div "item__content__settings", append in the div "item__content"
-                const item__content__settings = document.createElement("div")
-                item__content__settings.className = "cart__item__content__settings"
-                item__content.appendChild(item__content__settings)
-                // Create a paragraph and a input add in div "item__content__settings"
-                const item__content__settings__quantity = document.createElement("div")
-                item__content__settings__quantity.className = "cart__item__content__settings__quantity"
-                item__content__settings.appendChild(item__content__settings__quantity)
-                const quantity = document.createElement("p")
-                quantity.innerHTML = "Qté : "  
-                const input = document.createElement("input")
-                input.value = productLocalStorage[i].quantity
-                input.type = "number"
-                input.min = "1"
-                input.max = "100"
-                item__content__settings__quantity.appendChild(quantity)
-                item__content__settings__quantity.appendChild(input)
-                
-                // ------ Create a div "item__content__settings__delete", append in the div "tem__content__settings"
-                const item__content__settings__delete = document.createElement("div")
-                item__content__settings__delete.className = "cart__item__content__settings__delete"
-                item__content__settings.appendChild(item__content__settings__delete)
-                // Create a paragraph and add in div "item__content__settings__delete"
-                const deleteItem = document.createElement("p")
-                deleteItem.className = "deleteItem"
-                item__content__settings__delete.appendChild(deleteItem)
-                deleteItem.innerHTML = "Supprimer"
-                // Delete an article refresh the informations 
-                let selectID = productLocalStorage[i].id
-                deleteItem.addEventListener("click", event => {
-                    event.preventDefault()
-                    productLocalStorage = productLocalStorage.filter(el => el.id !== selectID)
-                    localStorage.setItem("produit", JSON.stringify(productLocalStorage))
-                    window.location.reload()
-                })
-
-                // ------ Show the number of products
-                const totalQuantity = document.querySelector("#totalQuantity")
+                // Show the number of products
+                const totalQuantity = document.getElementById("totalQuantity")
                 totalQuantity.innerHTML = productLocalStorage.length
-                // ------ Show total price
+                // Show total price
                 let allPrice = []
                 for(j = 0; j < productLocalStorage.length; j++){
                     let addPrice = productLocalStorage[j].price * productLocalStorage[j].quantity
@@ -95,8 +63,18 @@ fetch("http://localhost:3000/api/products")
                 }
                 const reducer = (previousValue, currentValue) => previousValue + currentValue
                 let total = allPrice.reduce(reducer, 0)
-                const totalPrice = document.querySelector("#totalPrice")
+                const totalPrice = document.getElementById("totalPrice")
                 totalPrice.innerHTML = total
+
+                // Add or remove the number of a product*                
+                const itemQuantity = document.querySelectorAll(".itemQuantity")
+                for (let u = 0; u < itemQuantity.length; u++) {
+                    itemQuantity[u].addEventListener("change", event => {
+                        const quantity = document.querySelector(".itemQuantity").value
+                        let price = productLocalStorage[u].price
+                        console.log(price, quantity);
+                    })
+                }
             }
         }
     })

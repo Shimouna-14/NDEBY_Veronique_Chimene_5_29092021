@@ -1,43 +1,38 @@
+// Get the id on the URL of the page, retrieve it and put its data
 const url_id = window.location.search
 const urlSearch = new URLSearchParams(url_id)
-fetch("http://localhost:3000/api/products/")
+const id = urlSearch.get("id")
+fetch("http://localhost:3000/api/products/" + id)
     .then(function (resp) {
         if (resp.ok) {return resp.json()}
     })
-    .then(obj => {
-        // Get the id on the URL of the page, retrieve it and put its data
-        const _id = urlSearch.get("id")
-        const productSelect = obj.find((element)=> element._id === _id)
-
-        // Select the elements of the HTML file
+    .then(productSelect => {
+        // // Add an image in ".item__img"
         const item_img = document.querySelector(".item__img");
-        const title = document.querySelector("#title")
-        const titlePage = document.querySelector("title")
-        const cost = document.querySelector("#price")
-        const descript = document.querySelector("#description")
-        const colors = document.querySelector("#colors")
-        const button = document.querySelector("#addToCart")
-
-        // Add an image in ".item__img"
-        const img = document.createElement("img")
-        item_img.appendChild(img)
-        img.src = productSelect.imageUrl
-        img.alt = productSelect.altTxt
+        let img = `<img src="${productSelect.imageUrl}" alt="${productSelect.altTxt}">`
+        item_img.innerHTML = img
 
         // Add the name of the product in "#title" et "title"
-        const name = productSelect.name
+        const title = document.querySelector("#title")
+        const titlePage = document.querySelector("title")
+        let name = `<h1 id="title">${productSelect.name}</h1>`
         title.innerHTML = name
-        titlePage.innerHTML = name
+        titlePage.innerHTML = productSelect.name
 
-        // AAdd the price in "#price"
-        const price = productSelect.price
+        // // AAdd the price in "#price"
+        const cost = document.getElementById("price")
+        const price = `<span id="price">${productSelect.price}</span>`
         cost.innerHTML = price
 
-        // Add the description in "#description"
-        const description = productSelect.description
+        // // Add the description in "#description"
+        const descript = document.getElementById("description")
+        const description = `<p id="description">${productSelect.description}</p>`
         descript.innerHTML = description
 
-        // Put the elements of the table "colors" by their size
+        const button = document.getElementById("addToCart")
+        const quantity = document.getElementById("quantity")
+        // // Put the elements of the table "colors" by their size
+        const colors = document.getElementById("colors")
         let selectColor = productSelect.colors
         for(i = 0; i < selectColor.length; i++){
             const option = document.createElement("option")
@@ -67,23 +62,21 @@ fetch("http://localhost:3000/api/products/")
                 // Put the keys and values of "user_choice" in the Local Storage
                 let productLocalStorage = JSON.parse(localStorage.getItem("produit"))
                 if (productLocalStorage){
+                    let found = false;
                     for (let current of productLocalStorage) {
-                        let count = false;
                         if (current.id == user_choice.id && current.color == user_choice.color) {
-                            count = true
+                            found = true
                             let storage_quantity = parseInt(current.quantity, 10)  
                             let user_quantity = parseInt(user_choice.quantity, 10)
-                            let addQuantity = storage_quantity += user_quantity
+                            current.quantity = storage_quantity += user_quantity
                             localStorage.setItem("produit", JSON.stringify(productLocalStorage))
                             console.log(productLocalStorage)
-                            console.log(addQuantity)
-
                         } 
-                        else {
-                            productLocalStorage.push(user_choice)
-                            localStorage.setItem("produit", JSON.stringify(productLocalStorage))
-                            console.log(productLocalStorage)
-                        }
+                    }
+                    if (!found) {
+                        productLocalStorage.push(user_choice)
+                        localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                        console.log(productLocalStorage)
                     }
                 }
                 else {

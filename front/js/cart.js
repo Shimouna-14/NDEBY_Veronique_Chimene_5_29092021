@@ -40,13 +40,12 @@ fetch("http://localhost:3000/api/products")
                 </article>`
                 cart__items.innerHTML += cart
 
-                // Delete an article refresh the informations
                 const deleteItem = document.querySelectorAll(".deleteItem")
                 for (let d = 0; d < deleteItem.length; d++) {
                     deleteItem[d].addEventListener("click", event => {
                         event.preventDefault()
-                        let selectID = productLocalStorage[d].id
-                        productLocalStorage = productLocalStorage.filter(el => el.id !== selectID)
+                        // Delete the product selected and updated the informations
+                        productLocalStorage = productLocalStorage.filter(el => !(el.id == productLocalStorage[d].id && el.color == productLocalStorage[d].color) )
                         localStorage.setItem("produit", JSON.stringify(productLocalStorage))
                         window.location.reload()
                     })
@@ -70,11 +69,36 @@ fetch("http://localhost:3000/api/products")
                 const itemQuantity = document.querySelectorAll(".itemQuantity")
                 for (let u = 0; u < itemQuantity.length; u++) {
                     itemQuantity[u].addEventListener("change", event => {
-                        const quantity = document.querySelector(".itemQuantity").value
+                        let udapteQuantity = event.target
+                        let quantity = udapteQuantity.value
                         let price = productLocalStorage[u].price
-                        console.log(price, quantity);
+                        productLocalStorage[u].quantity = quantity
+                        price = productLocalStorage[u].price * quantity
+                        // localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                        // window.location.reload()
                     })
                 }
+
+
+                // Formulaire
+                const order = document.getElementById("order")
+                order.addEventListener("click", event =>{
+                    event.preventDefault()
+                    const firstName = document.getElementById("firstName").value // ^[A-Za-z-']{3,20}+$
+                    const lastName = document.getElementById("lastName").value // ^[A-Za-z-']{2,20}+$
+                    const address = document.getElementById("address").value // ^[A-Za-z0-9-']+$
+                    const city = document.getElementById("city").value // ^([0-9]{5}) ([A-Za-z-']+)$
+                    const email = document.getElementById("email").value //
+
+                    let form = {
+                        firstName : firstName,
+                        lastName : lastName,
+                        address : address,
+                        city : city,
+                        email : email,
+                    }
+                })
+                
             }
         }
     })

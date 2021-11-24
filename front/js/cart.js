@@ -1,8 +1,8 @@
 fetch("http://localhost:3000/api/products")
     .then(resp => {if (resp.ok) {return resp.json()}})
     .then(obj =>{
-        // The keys and values of "user_choice" in the Local Storage
-        let productLocalStorage = JSON.parse(localStorage.getItem("produit"))
+        // The values of "user_choice" in the Local Storage
+        let productLocalStorage = JSON.parse(localStorage.getItem("product"))
 
         // If the cart is empty
         if (productLocalStorage == null || productLocalStorage.length == []) {
@@ -25,7 +25,7 @@ fetch("http://localhost:3000/api/products")
                         <div class="cart__item__content__description">
                             <h2>${productLocalStorage[i].product}</h2>
                             <p>${productLocalStorage[i].color}</p>
-                            <p>${productLocalStorage[i].price}€</p>
+                            <p>${productLocalStorage[i].price * productLocalStorage[i].quantity}€</p>
                         </div>
                         <div class="cart__item__content__settings">
                             <div class="cart__item__content__settings__quantity">
@@ -52,8 +52,17 @@ fetch("http://localhost:3000/api/products")
                 }
 
                 // Show the number of products
+                let allQuantity = []
+                for(j = 0; j < productLocalStorage.length; j++){
+                    let quantity = productLocalStorage[j].quantity
+                    let addQuantity = parseInt(quantity, 10)
+                    allQuantity.push(addQuantity)
+                }
+                const reduce = (previousValue, currentValue) => previousValue + currentValue
+                let Qtotal = allQuantity.reduce(reduce, 0)
                 const totalQuantity = document.getElementById("totalQuantity")
-                totalQuantity.innerHTML = productLocalStorage.length
+                totalQuantity.innerHTML = Qtotal
+
                 // Show total price
                 let allPrice = []
                 for(j = 0; j < productLocalStorage.length; j++){
@@ -61,44 +70,108 @@ fetch("http://localhost:3000/api/products")
                     allPrice.push(addPrice)
                 }
                 const reducer = (previousValue, currentValue) => previousValue + currentValue
-                let total = allPrice.reduce(reducer, 0)
+                let Ptotal = allPrice.reduce(reducer, 0)
                 const totalPrice = document.getElementById("totalPrice")
-                totalPrice.innerHTML = total
+                totalPrice.innerHTML = Ptotal
 
-                // Add or remove the number of a product*                
+                // Add or remove the number of a product            
                 const itemQuantity = document.querySelectorAll(".itemQuantity")
                 for (let u = 0; u < itemQuantity.length; u++) {
                     itemQuantity[u].addEventListener("change", event => {
                         let udapteQuantity = event.target
                         let quantity = udapteQuantity.value
-                        let price = productLocalStorage[u].price
                         productLocalStorage[u].quantity = quantity
-                        price = productLocalStorage[u].price * quantity
-                        // localStorage.setItem("produit", JSON.stringify(productLocalStorage))
-                        // window.location.reload()
+                        localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                        window.location.reload()
                     })
                 }
-
-
-                // Formulaire
-                const order = document.getElementById("order")
-                order.addEventListener("click", event =>{
-                    event.preventDefault()
-                    const firstName = document.getElementById("firstName").value // ^[A-Za-z-']{3,20}+$
-                    const lastName = document.getElementById("lastName").value // ^[A-Za-z-']{2,20}+$
-                    const address = document.getElementById("address").value // ^[A-Za-z0-9-']+$
-                    const city = document.getElementById("city").value // ^([0-9]{5}) ([A-Za-z-']+)$
-                    const email = document.getElementById("email").value //
-
-                    let form = {
-                        firstName : firstName,
-                        lastName : lastName,
-                        address : address,
-                        city : city,
-                        email : email,
-                    }
-                })
-                
             }
+
+            // Formulaire
+            const order = document.getElementById("order")
+            order.addEventListener("click", event =>{
+                event.preventDefault()
+                const firstName = document.getElementById("firstName").value.trim()
+                const lastName = document.getElementById("lastName").value.trim()
+                const address = document.getElementById("address").value.trim()
+                const city = document.getElementById("city").value.trim()
+                const email = document.getElementById("email").value.trim()
+                let form = {
+                    firstName : firstName,
+                    lastName : lastName,
+                    address : address,
+                    city : city,
+                    email : email
+                }
+
+                function messagValid(params) {document.getElementById(`${params}`).textContent = ""}
+                function messagError(params) {document.getElementById(`${params}`).textContent = "Veuillez bien remplir le champs"}
+
+                function Fname() {
+                    if ((/^[A-Za-z][A-Za-z '-]{2,}$/).test(firstName)) {
+                        messagValid('firstNameErrorMsg')
+                        return true
+                    } else {
+                        messagError('firstNameErrorMsg')
+                        console.log("ko")
+                        return false
+                    }
+                }
+
+                function Lname() {
+                    if ((/^[A-Za-z][A-Za-z '-]{2,}$/).test(lastName)) {
+                        messagValid('lastNameErrorMsg')
+                        return true
+                    } else {
+                        messagError('lastNameErrorMsg')
+                        return false
+                    }
+                }
+
+                function Address() {
+                    if ((/^[\w][\w '-]+$/).test(address)) {
+                        messagValid('addressErrorMsg')
+                        return true
+                    } else {
+                        messagError('addressErrorMsg')
+                        return false
+                    }
+                }
+
+                function City() {
+                    if ((/^[A-Za-z][A-Za-z '-]+$/).test(city)) {
+                        messagValid('cityErrorMsg')
+                        return true
+                    } else {
+                        messagError('cityErrorMsg')
+                        return false
+                    }
+                }
+
+                function Email() {
+                    if ((/^[\w'-]+@{1}[\w'-]+\.{1}[\w]+$/).test(email)) {
+                        messagValid('emailErrorMsg')
+                        return true
+                    } else {
+                        messagError('emailErrorMsg')
+                        return false
+                    }
+                }
+                
+                let command = [productLocalStorage, form]
+                // let send = fetch("http://localhost:3000/api/products/", {
+                //     method: "POST",
+                //     body: command,
+                //     headers: {
+                //         "Content-Type": "application/json"
+                //     }
+                // })
+                if (Fname() && Lname() && Address() && City() && Email()) {
+                    // localStorage.setItem("command", JSON.stringify(command))
+                    console.log(command);
+                } else {
+                    console.log("Ko");
+                }
+            })
         }
     })

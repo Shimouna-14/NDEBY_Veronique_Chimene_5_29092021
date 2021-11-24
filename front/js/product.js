@@ -3,7 +3,7 @@ const url_id = window.location.search
 const urlSearch = new URLSearchParams(url_id)
 const id = urlSearch.get("id")
 fetch("http://localhost:3000/api/products/" + id)
-    .then(function (resp) {
+    .then(resp => {
         if (resp.ok) {return resp.json()}
     })
     .then(productSelect => {
@@ -44,7 +44,7 @@ fetch("http://localhost:3000/api/products/" + id)
 
         // Select the data for the Local Storage
         button.addEventListener("click", event => {
-            event.preventDefault();
+            event.preventDefault()
             let user_choice = {
                 image : productSelect.imageUrl,
                 altTxt : productSelect.altTxt,
@@ -60,7 +60,7 @@ fetch("http://localhost:3000/api/products/" + id)
             }
             else{
                 // Put the keys and values of "user_choice" in the Local Storage
-                let productLocalStorage = JSON.parse(localStorage.getItem("produit"))
+                let productLocalStorage = JSON.parse(localStorage.getItem("product"))
                 if (productLocalStorage){
                     let found = false;
                     for (let current of productLocalStorage) {
@@ -69,20 +69,20 @@ fetch("http://localhost:3000/api/products/" + id)
                             let storage_quantity = parseInt(current.quantity, 10)  
                             let user_quantity = parseInt(user_choice.quantity, 10)
                             current.quantity = storage_quantity += user_quantity
-                            localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                            localStorage.setItem("product", JSON.stringify(productLocalStorage))
                             console.log(productLocalStorage)
                         } 
                     }
                     if (!found) {
                         productLocalStorage.push(user_choice)
-                        localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                        localStorage.setItem("product", JSON.stringify(productLocalStorage))
                         console.log(productLocalStorage)
                     }
                 }
                 else {
                     productLocalStorage = []
                     productLocalStorage.push(user_choice)
-                    localStorage.setItem("produit", JSON.stringify(productLocalStorage))
+                    localStorage.setItem("product", JSON.stringify(productLocalStorage))
                     console.log(productLocalStorage)
                 }
             }

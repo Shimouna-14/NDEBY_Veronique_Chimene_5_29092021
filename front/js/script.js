@@ -7,7 +7,7 @@ fetch("http://localhost:3000/api/products")
         for (i = 0; i < products.length; i++){
             // Select the element of the HTML file 
             const item = document.querySelector(".items")
-            let line = `
+            let displayproducts = `
             <a href="./product.html?id=${products[i]._id}">
                 <article>
                     <img src="${products[i].imageUrl}" alt=${products[i].altTxt}>
@@ -16,6 +16,6 @@ fetch("http://localhost:3000/api/products")
                 </article>
             </a>
             `
-            item.innerHTML += line
+            item.innerHTML += displayproducts
         }
     })

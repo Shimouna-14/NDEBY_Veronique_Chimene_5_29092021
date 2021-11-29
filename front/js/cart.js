@@ -93,60 +93,6 @@ else {
         const city = document.getElementById("city").value.trim()
         const email = document.getElementById("email").value.trim()
 
-        function megError(selectID, msg) {
-            document.getElementById(`${selectID}`).textContent = msg
-        }
-
-        function checkFisrtName() {
-            if ((/^[A-Za-z][A-Za-z '-]{2,}$/).test(firstName)) {
-                megError('firstNameErrorMsg', "")
-                return true
-            } else {
-                megError('firstNameErrorMsg', "Bad")
-                return false
-            }
-        }
-
-        function checkLastname() {
-            if ((/^[A-Za-z][A-Za-z '-]{2,}$/).test(lastName)) {
-                megError('lastNameErrorMsg', "")
-                return true
-            } else {
-                megError('lastNameErrorMsg', "Bad")
-                return false
-            }
-        }
-
-        function checkAddress() {
-            if ((/^[\w][\w '-]+$/).test(address)) {
-                megError('addressErrorMsg', "")
-                return true
-            } else {
-                megError('addressErrorMsg', "Bad")
-                return false
-            }
-        }
-
-        function checkCity() {
-            if ((/^[A-Za-z][A-Za-z '-]+$/).test(city)) {
-                megError('cityErrorMsg', "")
-                return true
-            } else {
-                megError('cityErrorMsg', "Bad")
-                return false
-            }
-        }
-
-        function checkEmail() {
-            if ((/^[\w\.-]+@[\w\.-]+\.[\w]+$/).test(email)) {
-                megError('emailErrorMsg', "")
-                return true
-            } else {
-                megError('emailErrorMsg', "Bad")
-                return false
-            }
-        }
-
         let contact = {
             firstName: firstName,
             lastName: lastName,
@@ -165,6 +111,7 @@ else {
                     body: JSON.stringify({contact, products}),
                     headers: {
                         "Content-Type": "application/json",
+                        'Accept': 'application/json'
                     }
                 })
                 .then(resp => {
@@ -176,5 +123,57 @@ else {
                     window.location = "./confirmation.html?order=" + command.orderId
                 })
         }
+        function msgError(selectID, msg) {document.getElementById(`${selectID}`).textContent = msg}
+
+        function checkFisrtName() {
+            if ((/^[A-Za-z][A-Za-z '-]{2,}$/).test(firstName)) {
+                msgError('firstNameErrorMsg', "")
+                return true
+            } else {
+                msgError('firstNameErrorMsg', "Prénom incorrect")
+                return false
+            }
+        }
+
+        function checkLastname() {
+            if ((/^[A-Za-z][A-Za-z '-]{2,}$/).test(lastName)) {
+                msgError('lastNameErrorMsg', "")
+                return true
+            } else {
+                msgError('lastNameErrorMsg', "Nom incorrect")
+                return false
+            }
+        }
+
+        function checkAddress() {
+            if ((/^[\w][\w '-]+$/).test(address)) {
+                msgError('addressErrorMsg', "")
+                return true
+            } else {
+                msgError('addressErrorMsg', "Veuillez écrire une adresse valide")
+                return false
+            }
+        }
+
+        function checkCity() {
+            if ((/^[A-Za-z][A-Za-z '-]+$/).test(city)) {
+                msgError('cityErrorMsg', "")
+                return true
+            } else {
+                msgError('cityErrorMsg', "Veuillez écrire une ville")
+                return false
+            }
+        }
+
+        function checkEmail() {
+            if ((/^[\w\.-]+@[\w\.-]+\.[\w]+$/).test(email)) {
+                msgError('emailErrorMsg', "")
+                return true
+            } else {
+                msgError('emailErrorMsg', "Veuillez écrire un email valide")
+                return false
+            }
+        }
     })
 }
+

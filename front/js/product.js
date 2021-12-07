@@ -1,40 +1,36 @@
 // Get the id on the URL of the page, retrieve it and put its data
-const url_id = window.location.search
-const urlSearch = new URLSearchParams(url_id)
+const urlSearch = new URLSearchParams(window.location.search)
 const id = urlSearch.get("id")
 fetch("http://localhost:3000/api/products/" + id)
-    .then(resp => {
-        if (resp.ok) {return resp.json()}
-    })
+    .then(resp => { if (resp.ok) {return resp.json()} })
+
     .then(productSelect => {
-        // // Add an image in ".item__img"
+        // // Add the image of the product in ".item__img"
         const item_img = document.querySelector(".item__img");
-        let img = `<img src="${productSelect.imageUrl}" alt="${productSelect.altTxt}">`
+        const img = `<img src="${productSelect.imageUrl}" alt="${productSelect.altTxt}">`
         item_img.innerHTML = img
 
-        // Add the name of the product in "#title" et "title"
-        const title = document.querySelector("#title")
+        // Add the name in "#title" et "title"
+        const title = document.getElementById("title")
         const titlePage = document.querySelector("title")
-        let name = `<h1 id="title">${productSelect.name}</h1>`
+        const name = `<h1 id="title">${productSelect.name}</h1>`
         title.innerHTML = name
         titlePage.innerHTML = productSelect.name
 
-        // // AAdd the price in "#price"
+        // Add the price in "#price"
         const cost = document.getElementById("price")
         const price = `<span id="price">${productSelect.price}</span>`
         cost.innerHTML = price
 
-        // // Add the description in "#description"
+        // Add the description in "#description"
         const descript = document.getElementById("description")
         const description = `<p id="description">${productSelect.description}</p>`
         descript.innerHTML = description
 
-        const button = document.getElementById("addToCart")
-        const quantity = document.getElementById("quantity")
-        // // Put the elements of the table "colors" by their size
+        // Put the elements of the table "colors" by their size
         const colors = document.getElementById("colors")
-        let selectColor = productSelect.colors
-        for(i = 0; i < selectColor.length; i++){
+        const selectColor = productSelect.colors
+        for (let i = 0; i < selectColor.length; i++) {
             const option = document.createElement("option")
             colors.appendChild(option)
             colors.add = (option)
@@ -42,48 +38,48 @@ fetch("http://localhost:3000/api/products/" + id)
             option.text = selectColor[i]
         }
 
-        // Select the data for the Local Storage
+        // Select the data and put it in the Local Storage
+        const quantity = document.getElementById("quantity")
+        const button = document.getElementById("addToCart")
         button.addEventListener("click", event => {
             event.preventDefault()
             let user_choice = {
-                image : productSelect.imageUrl,
-                altTxt : productSelect.altTxt,
-                product : productSelect.name,
-                id : productSelect._id,
-                color : colors.options[colors.selectedIndex].text,
-                quantity : quantity.value,
-                price : productSelect.price
+                image: productSelect.imageUrl,
+                altTxt: productSelect.altTxt,
+                product: productSelect.name,
+                id: productSelect._id,
+                color: colors.options[colors.selectedIndex].text,
+                quantity: quantity.value,
+                price: productSelect.price
             }
 
-            if(quantity.value < 1 || quantity.value > 100 || colors.value === ""){
-                alert("Choisissez une couleur et un nombre 1 entre 100")
-            }
-            else{
-                // Put the keys and values of "user_choice" in the Local Storage
+            if (quantity.value < 1 || quantity.value > 100 || colors.value === ""){
+                alert("Choisissez une couleur et un nombre entre 1 & 100")            
+            } else {
+                // Put the data of "user_choice" in the Local Storage
                 let productLocalStorage = JSON.parse(localStorage.getItem("product"))
-                if (productLocalStorage){
+                if (productLocalStorage) {
                     let found = false;
                     for (let current of productLocalStorage) {
+                        // If the product is already in the Local, add the quantity added
                         if (current.id == user_choice.id && current.color == user_choice.color) {
                             found = true
-                            let storage_quantity = parseInt(current.quantity, 10)  
+                            let storage_quantity = parseInt(current.quantity, 10)
                             let user_quantity = parseInt(user_choice.quantity, 10)
                             current.quantity = storage_quantity += user_quantity
                             localStorage.setItem("product", JSON.stringify(productLocalStorage))
-                            console.log(productLocalStorage)
-                        } 
+                        }
                     }
+                    // If the condition is false, a new product is added in the Local Storage
                     if (!found) {
                         productLocalStorage.push(user_choice)
                         localStorage.setItem("product", JSON.stringify(productLocalStorage))
-                        console.log(productLocalStorage)
                     }
-                }
-                else {
+                // if the Local Storage is empty, a array is create
+                } else {
                     productLocalStorage = []
                     productLocalStorage.push(user_choice)
                     localStorage.setItem("product", JSON.stringify(productLocalStorage))
-                    console.log(productLocalStorage)
                 }
             }
         })

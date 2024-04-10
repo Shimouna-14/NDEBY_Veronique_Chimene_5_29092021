@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 require("dotenv").config();
-
 const productRoutes = require('./routes/product');
 
 const app = express();
@@ -14,8 +13,6 @@ app.use((req, res, next) => {
 });
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
-app.use(express.static('images'));
-
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 

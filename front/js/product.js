@@ -68,6 +68,7 @@ fetch("http://localhost:3000/api/products/" + id)
                             let user_quantity = parseInt(user_choice.quantity, 10)
                             current.quantity = storage_quantity += user_quantity
                             localStorage.setItem("product", JSON.stringify(productLocalStorage))
+                            alert("L'article a été ajouté au panier")
                         }
                     }
                     // If the condition is false, a new product is added in the Local Storage
